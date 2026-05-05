@@ -1342,12 +1342,6 @@ function s4next(){
 function goBack(){ step--; if(step<1){closeCheckout();return;} renderStep(); }
 
 /* ── BIT & SEND ── */
-function showBit(){
-  closeCheckout();
-  document.getElementById('bit-pop').classList.add('open');
-  document.getElementById('bit-go').onclick = doSend;
-}
-
 async function doSend(){
   document.getElementById('bit-pop').classList.remove('open');
 
@@ -1400,14 +1394,19 @@ async function doSend(){
     `📸 יש לשלוח צילום מסך לאישור ✅`,
   ];
 
-  // ✅ window.open לפני await — חובה במובייל!
   const waUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`;
-  window.location.href = waUrl;
 
-  // Firebase אחרי הפתיחה
+  // ✅ פתרון ספארי — יצירת לינק אמיתי וקליק עליו
+  const a = document.createElement('a');
+  a.href = waUrl;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  // Firebase אחרי
   if(selectedDate && selectedSlot) await bookSlot(selectedDate, selectedSlot);
 }
-
 /* ═══════════════════════════════════════════
    EMBER PARTICLES
 ═══════════════════════════════════════════ */
