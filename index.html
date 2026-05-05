@@ -1402,7 +1402,7 @@ async function doSend(){
 
   // ✅ window.open לפני await — חובה במובייל!
   const waUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`;
-  window.open(waUrl, '_blank');
+  window.location.href = waUrl;
 
   // Firebase אחרי הפתיחה
   if(selectedDate && selectedSlot) await bookSlot(selectedDate, selectedSlot);
