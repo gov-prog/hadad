@@ -1340,7 +1340,10 @@ function s4next(){
   custName=n.value.trim(); custPhone=p.value.trim(); step=5; renderStep();
 }
 function goBack(){ step--; if(step<1){closeCheckout();return;} renderStep(); }
-
+function showBit(){
+  closeCheckout();
+  document.getElementById('bit-pop').classList.add('open');
+}
 /* ── BIT & SEND ── */
 function doSend(){
   document.getElementById('bit-pop').classList.remove('open');
