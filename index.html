@@ -484,7 +484,7 @@ body::before{
 .bit-msg{font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:18px;}
 .bit-num{font-size:24px;font-weight:700;color:var(--tc-d);letter-spacing:1.5px;direction:ltr;display:block;margin:10px 0 4px;}
 .bit-name{font-size:12px;color:var(--muted);margin-bottom:24px;}
-.bit-go{width:100%;background:var(--green);color:#fff;border:none;padding:15px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;margin-bottom:10px;transition:background .15s;}
+display:block;text-decoration:none;text-align:center;color:#fff;border:none;padding:15px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;margin-bottom:10px;transition:background .15s;}
 .bit-go:hover{background:var(--green-d);}
 .bit-back{width:100%;background:none;border:1.5px solid var(--border);color:var(--muted);padding:12px;border-radius:14px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;}
 
@@ -735,7 +735,7 @@ footer strong{color:rgba(250,243,224,.6);}
     <div class="bit-msg">לאחר שליחת ההזמנה לוואטסאפ,<br><strong>שלח/י צילום מסך של העברת הביט</strong><br>לאישור ההזמנה 🙏</div>
     <span class="bit-num">054-984-3397</span>
     <div class="bit-name">דביר חדד</div>
-    <button class="bit-go" id="bit-go">שלח הזמנה לוואטסאפ 💬</button>
+  <a class="bit-go" id="bit-go" href="#" onclick="doSend(); return false;">שלח הזמנה לוואטסאפ 💬</a>
     <button class="bit-back" onclick="closeBit()">← חזור</button>
   </div>
 </div>
