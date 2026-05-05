@@ -1428,9 +1428,12 @@ const lines=[
       : (Math.floor(it.qty/2)*90+(it.qty%2)*50);
     const deal = (it.type==='classic'&&it.qty>=3) ? ' ✅ מבצע'
       : (it.type==='special'&&it.qty>=2) ? ' ✅ מבצע' : '';
-    const tops = it.toppings&&it.toppings.length
-      ? `\n  + ${it.toppings.map(t=>t.icon+t.name+(t.half!=='full'?' ('+halfLabel(t.half)+')':'')).join(', ')}`
-      : '';
+  const tops = it.toppings&&it.toppings.length
+  ? `\n  + ${it.toppings.map(t=>{
+      const halfTxt = t.half==='right' ? ' — חצי ימין' : t.half==='left' ? ' — חצי שמאל' : '';
+      return t.icon+t.name+halfTxt;
+    }).join('\n  + ')}`
+  : '';
     return `🍕 *${it.name}*  ×${it.qty}  =  *₪${smart}*${deal}${tops}`;
   }),
   ...toppingItems.map(it=>`  + ${it.name} ×${it.qty}  =  ₪${it.price*it.qty}`),
