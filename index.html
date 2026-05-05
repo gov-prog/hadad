@@ -1411,24 +1411,35 @@ function doSend(){
   toppingItems.forEach(it=>{ payLines.push(`${it.name} × ${it.qty}    ₪${it.price*it.qty}`); });
   if(del) payLines.push(`🛵 משלוח    ₪10`);
 
-  const lines=[
-    `🍕 *הזמנה חדשה — פיצה בנימינה*`, sep, ``,
-    `👤 *לקוח:* ${custName}`,
-    `📞 *טלפון:* ${custPhone}`, ``,
-    `📦 *סוג הזמנה:* ${orderType==='delivery'?'משלוח':'איסוף עצמי'}`,
-    `📍 *כתובת:* ${orderType==='delivery'?address:PICKUP_ADDR}`, ``,
-    `📅 *תאריך:* ${hebrewDate}`,
-    `🕔 *שעה:* ${selectedSlot}`, ``,
-    sep, `🛒 *פירוט ההזמנה:*`, ``,
-    ...itemLines, ``,
-    sep, `💰 *סיכום תשלום:*`, ``,
-    ...payLines,
-    `─────────────────────`,
-    `💵 *סה"כ לתשלום:*   *₪${total}*`, ``,
-    sep, `💸 *תשלום בביט:*`,
-    `📱 054-984-3397 (דביר חדד)`,
-    `📸 יש לשלוח צילום מסך לאישור ✅`,
-  ];
+const lines=[
+  `🍕 *הזמנה חדשה*`,
+  ``,
+  `*${custName}*  ·  ${custPhone}`,
+  ``,
+  orderType==='delivery'
+    ? `🛵 *משלוח* ➜ ${address}`
+    : `🚶 *איסוף עצמי* ➜ ${PICKUP_ADDR}`,
+  `📅 *${hebrewDate}*  🕔 *${selectedSlot}*`,
+  ``,
+  `━━━━━━━━━━━━━━━`,
+  ...pizzaItems.map(it=>{
+    const smart = it.type==='classic'
+      ? (Math.floor(it.qty/3)*100+(it.qty%3)*45)
+      : (Math.floor(it.qty/2)*90+(it.qty%2)*50);
+    const deal = (it.type==='classic'&&it.qty>=3) ? ' ✅ מבצע'
+      : (it.type==='special'&&it.qty>=2) ? ' ✅ מבצע' : '';
+    const tops = it.toppings&&it.toppings.length
+      ? `\n  + ${it.toppings.map(t=>t.icon+t.name+(t.half!=='full'?' ('+halfLabel(t.half)+')':'')).join(', ')}`
+      : '';
+    return `🍕 *${it.name}*  ×${it.qty}  =  *₪${smart}*${deal}${tops}`;
+  }),
+  ...toppingItems.map(it=>`  + ${it.name} ×${it.qty}  =  ₪${it.price*it.qty}`),
+  `━━━━━━━━━━━━━━━`,
+  del ? `🛵 משלוח  +₪10` : ``,
+  `💵 *לתשלום: ₪${total}*`,
+  `━━━━━━━━━━━━━━━`,
+  `💸 ביט ➜ *054-984-3397*`,
+].filter(Boolean);
 
   const waUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`;
 
