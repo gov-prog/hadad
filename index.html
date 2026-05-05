@@ -1452,9 +1452,48 @@ const lines=[
   document.body.removeChild(a);
 
   // Firebase ברקע — בלי await
+ // Firebase ברקע — בלי await
   if(selectedDate && selectedSlot) bookSlot(selectedDate, selectedSlot);
-}
-  function showSuccessScreen(){
+
+  // שמירת הזמנה מלאה ל-Firebase
+  if(window._firebaseReady){
+    const orderId = 'order-' + Date.now();
+    const now = new Date();
+    const orderRef = window._fsDoc(window._db, 'orders', orderId);
+    window._fsSetDoc(orderRef, {
+      id: orderId,
+      createdAt: now.toISOString(),
+      createdAtMs: now.getTime(),
+      name: custName,
+      phone: custPhone,
+      type: orderType,
+      address: orderType==='delivery' ? address : PICKUP_ADDR,
+      date: selectedDate,
+      slot: selectedSlot,
+      items: [
+        ...pizzaItems.map(it=>({
+          name: it.name,
+          qty: it.qty,
+          type: it.type,
+          toppings: it.toppings||[]
+        })),
+        ...toppingItems.map(it=>({
+          name: it.name,
+          qty: it.qty,
+          type: 'topping',
+          price: it.price
+        }))
+      ],
+      total: calcSmartTotal() + (orderType==='delivery'?10:0),
+      deals: pizzaItems
+        .filter(it=>(it.type==='classic'&&it.qty>=3)||(it.type==='special'&&it.qty>=2))
+        .map(it=>it.type==='classic'?'3 ב-₪100':'2 ב-₪90').join(', '),
+      status: 'new'
+    });
+  }
+
+} // ← הסוגר של doSend
+function showSuccessScreen(){
   document.getElementById('bit-pop').classList.remove('open');
   const el = document.getElementById('success-screen');
   el.style.display='flex';
@@ -1492,6 +1531,17 @@ const obs=new IntersectionObserver(es=>es.forEach((e,i)=>{
   }
 }),{threshold:.08});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  let tapCount = 0;
+let tapTimer = null;
+document.querySelector('footer strong').addEventListener('click', ()=>{
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(()=>{ tapCount=0; }, 2000);
+  if(tapCount >= 5){
+    tapCount = 0;
+    window.open('admin.html','_blank');
+  }
+});
 </script>
   <div id="success-screen" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(10,5,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px;transition:opacity .4s;opacity:0;">
   <div style="background:#fff;width:min(380px,100%);border-radius:28px;padding:44px 32px;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.5);">
