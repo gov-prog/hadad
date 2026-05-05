@@ -1318,8 +1318,21 @@ async function loadSlots(){
   if(!container) return;
 
   const available = TIME_SLOTS.filter(s=>!booked.includes(s));
-  if(available.length===0){
-    container.innerHTML='<div class="slots-none">כל השעות ביום זה תפוסות 😢<br><small style="opacity:.6;">אנא בחר תאריך אחר</small></div>';
+ if(available.length===0){
+    const nextDay = new Date(selectedDate+'T12:00:00');
+    nextDay.setDate(nextDay.getDate()+1);
+    const nextDateStr = nextDay.toISOString().split('T')[0];
+    const nextDayLabel = nextDay.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'});
+    container.innerHTML=`<div class="slots-none">
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px;">כל השעות ביום זה תפוסות 😢</div>
+      <div style="font-size:12px;opacity:.6;margin-bottom:16px;">אנא בחר תאריך אחר</div>
+      <button onclick="goToDate('${nextDateStr}')" style="
+        background:linear-gradient(135deg,var(--tc),var(--tc-l));
+        color:#fff;border:none;padding:12px 22px;border-radius:12px;
+        font-size:14px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;
+        box-shadow:0 4px 14px rgba(193,68,14,.35);width:100%;
+      ">📅 עבור למחר — ${nextDayLabel}</button>
+    </div>`;
     document.getElementById('slot-actions').style.display='flex';
     return;
   }
@@ -1496,6 +1509,17 @@ const lines=[
   }
 
 } // ← הסוגר של doSend
+  /* ════════════════════════
+   GO TO DATE
+════════════════════════ */
+function goToDate(dateStr){
+  selectedDate = dateStr;
+  selectedSlot = '';
+  const d = new Date(dateStr+'T12:00:00');
+  calYear  = d.getFullYear();
+  calMonth = d.getMonth();
+  renderStep(); // מרענן את צעד 3 עם התאריך החדש
+}
 function showSuccessScreen(){
   document.getElementById('bit-pop').classList.remove('open');
   const el = document.getElementById('success-screen');
