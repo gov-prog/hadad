@@ -1342,7 +1342,7 @@ function s4next(){
 function goBack(){ step--; if(step<1){closeCheckout();return;} renderStep(); }
 
 /* ── BIT & SEND ── */
-async function doSend(){
+function doSend(){
   document.getElementById('bit-pop').classList.remove('open');
 
   const del = orderType==='delivery'?10:0;
@@ -1396,7 +1396,7 @@ async function doSend(){
 
   const waUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`;
 
-  // ✅ פתרון ספארי — יצירת לינק אמיתי וקליק עליו
+  // פתיחה מיידית — לא async, ספארי לא חוסם
   const a = document.createElement('a');
   a.href = waUrl;
   a.style.display = 'none';
@@ -1404,8 +1404,8 @@ async function doSend(){
   a.click();
   document.body.removeChild(a);
 
-  // Firebase אחרי
-  if(selectedDate && selectedSlot) await bookSlot(selectedDate, selectedSlot);
+  // Firebase ברקע — בלי await
+  if(selectedDate && selectedSlot) bookSlot(selectedDate, selectedSlot);
 }
 /* ═══════════════════════════════════════════
    EMBER PARTICLES
