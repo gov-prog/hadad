@@ -957,22 +957,24 @@ function addPizzaToCart(pizza, toppings){
 
   // Add toppings as separate line items (grouped)
   toppings.forEach(top=>{
-    const topKey = 'top|'+top.id+'|'+top.half;
-    const existingTop = cart.find(x=>x.key===topKey);
-    if(existingTop){
-      existingTop.qty++;
-    }else{
-      cart.push({
-        id:'t-'+Date.now()+'-'+top.id,
-        key: topKey,
-        type:'topping',
-        name: top.name + (top.half!=='full'?' ('+halfLabel(top.half)+')':''),
-        price: top.price,
-        qty: 1
-      });
-    }
-  });
-
+  const topKey = 'top|'+top.id+'|'+top.half;
+  const existingTop = cart.find(x=>x.key===topKey);
+  const halfPrice = top.half==='full' ? top.price : 2.5;
+  const halfName = top.half==='right' ? ' — חצי ימין'
+                 : top.half==='left'  ? ' — חצי שמאל' : '';
+  if(existingTop){
+    existingTop.qty++;
+  }else{
+    cart.push({
+      id:'t-'+Date.now()+'-'+top.id,
+      key: topKey,
+      type:'topping',
+      name: top.icon + top.name + halfName,
+      price: halfPrice,
+      qty: 1
+    });
+  }
+});
   renderAll();
   animFloat();
 }
