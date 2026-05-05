@@ -507,6 +507,25 @@ footer strong{color:rgba(250,243,224,.6);}
   .cal-day{font-size:12px;}
   #cart-float{left:16px;bottom:20px;}
 }
+  .wa-mega-btn{
+  background:linear-gradient(135deg,#25D366,#128C7E) !important;
+  box-shadow:0 6px 28px rgba(37,211,102,.5) !important;
+  padding:18px 20px !important;
+  border-radius:18px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:14px !important;
+  text-align:right !important;
+  animation:wa-pulse 2s infinite;
+}
+.wa-mega-btn:hover{transform:translateY(-3px) scale(1.02) !important;box-shadow:0 12px 40px rgba(37,211,102,.65) !important;}
+.wa-icon{font-size:34px;flex-shrink:0;}
+.wa-main{font-size:18px;font-weight:800;display:block;}
+.wa-hint{font-size:12px;opacity:.85;font-weight:400;}
+@keyframes wa-pulse{
+  0%,100%{box-shadow:0 6px 28px rgba(37,211,102,.5);}
+  50%{box-shadow:0 6px 40px rgba(37,211,102,.85),0 0 0 6px rgba(37,211,102,.12);}
+}
 </style>
 </head>
 <body>
@@ -1270,11 +1289,23 @@ function renderStep(){
         ${orderType==='delivery'?'🛵 '+address:'🚶 '+PICKUP_ADDR}<br>
         📅 ${hebrewDate} &nbsp;·&nbsp; 🕔 ${selectedSlot}
       </div>
-      <div style="background:rgba(193,68,14,.07);border:1px solid rgba(193,68,14,.2);border-radius:12px;padding:13px 16px;font-size:13px;color:var(--tc-d);margin-bottom:20px;">
-        💸 תשלום בביט ל-<strong>054-984-3397</strong> (דביר חדד)
-      </div>
+     <div style="background:rgba(37,211,102,.07);border:2px solid rgba(37,211,102,.3);border-radius:14px;padding:16px 18px;margin-bottom:20px;">
+  <div style="font-size:14px;font-weight:800;color:#128C7E;margin-bottom:8px;">💸 איך משלמים?</div>
+  <div style="font-size:13px;color:var(--char);line-height:2;">
+    1️⃣ לחץ על כפתור הוואטסאפ למטה<br>
+    2️⃣ שלח את ההודעה שתיפתח אוטומטית<br>
+    3️⃣ העבר בביט לדביר: <strong style="font-size:16px;letter-spacing:1px;">054-984-3397</strong><br>
+    4️⃣ שלח צילום מסך של הביט לאישור ✅
+  </div>
+</div>
       <div class="actions">
-     <button class="next-btn green" onclick="showBit()">שלח הזמנה 💬</button>
+  <button class="next-btn wa-mega-btn" onclick="showBit()">
+  <span class="wa-icon">💬</span>
+  <span>
+    <span class="wa-main">שלח הזמנה בוואטסאפ</span><br>
+    <span class="wa-hint">לחיצה תפתח את וואטסאפ עם ההזמנה מוכנה — רק תלחץ שלח!</span>
+  </span>
+</button>
         <button class="back-btn" onclick="goBack()">→ חזור</button>
       </div>`;
   }
@@ -1412,6 +1443,12 @@ function doSend(){
   // Firebase ברקע — בלי await
   if(selectedDate && selectedSlot) bookSlot(selectedDate, selectedSlot);
 }
+  function showSuccessScreen(){
+  document.getElementById('bit-pop').classList.remove('open');
+  const el = document.getElementById('success-screen');
+  el.style.display='flex';
+  setTimeout(()=>el.classList.add('open'),10);
+}
 /* ═══════════════════════════════════════════
    EMBER PARTICLES
 ═══════════════════════════════════════════ */
@@ -1445,5 +1482,22 @@ const obs=new IntersectionObserver(es=>es.forEach((e,i)=>{
 }),{threshold:.08});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
+  <div id="success-screen" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(10,5,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px;transition:opacity .4s;opacity:0;">
+  <div style="background:#fff;width:min(380px,100%);border-radius:28px;padding:44px 32px;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.5);">
+    <div style="font-size:72px;margin-bottom:8px;animation:pop .5s cubic-bezier(.17,.67,.46,1.6);">✅</div>
+    <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:10px;">ההזמנה נשלחה!</div>
+    <div style="font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:24px;">
+      וואטסאפ נפתח עם ההזמנה שלך.<br>
+      <strong style="color:var(--char);">אל תשכח לשלוח את ההודעה!</strong><br><br>
+      לאחר מכן העבר בביט ושלח צילום מסך לדביר 🙏
+    </div>
+    <a href="https://wa.me/972549843397" target="_blank" style="display:block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;padding:14px;border-radius:14px;font-weight:700;font-size:15px;text-decoration:none;margin-bottom:10px;">💬 פתח וואטסאפ שוב</a>
+    <button onclick="document.getElementById('success-screen').style.display='none'" style="width:100%;background:none;border:1.5px solid var(--border);padding:12px;border-radius:14px;font-size:14px;cursor:pointer;font-family:'Heebo',sans-serif;color:var(--muted);">סגור</button>
+  </div>
+</div>
+<style>
+#success-screen.open{opacity:1 !important;}
+@keyframes pop{0%{transform:scale(0);}100%{transform:scale(1);}}
+</style>
 </body>
 </html>
