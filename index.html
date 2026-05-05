@@ -1273,7 +1273,7 @@ function renderStep(){
         💸 תשלום בביט ל-<strong>054-984-3397</strong> (דביר חדד)
       </div>
       <div class="actions">
-      <a class="next-btn green" href="#" onclick="showBit(); return false;" style="text-decoration:none;text-align:center;">שלח הזמנה 💬</a>
+     <button class="next-btn green" onclick="showBit()">שלח הזמנה 💬</button>
         <button class="back-btn" onclick="goBack()">→ חזור</button>
       </div>`;
   }
@@ -1340,8 +1340,9 @@ function s4next(){
   custName=n.value.trim(); custPhone=p.value.trim(); step=5; renderStep();
 }
 function goBack(){ step--; if(step<1){closeCheckout();return;} renderStep(); }
+  
 function showBit(){
-  closeCheckout();
+  document.getElementById('co-modal').classList.remove('open');
   document.getElementById('bit-pop').classList.add('open');
 }
 /* ── BIT & SEND ── */
