@@ -506,14 +506,15 @@ function renderOrderCard(o, idx){
         </div>
       </div>
 
-      <div class="order-actions">
-        ${o.status==='new'?`<button class="action-btn btn-confirm" onclick="setStatus('${o.id}','confirmed')">✅ אשר</button>`:''}
-        ${o.status!=='done'&&o.status!=='cancelled'?`<button class="action-btn btn-done" onclick="setStatus('${o.id}','done')">🎉 הושלם</button>`:''}
-        <a href="https://wa.me/972${(o.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${waMsg}" target="_blank">
-          <button class="action-btn btn-wa" style="width:100%">💬 וואטסאפ</button>
-        </a>
-        ${o.status!=='cancelled'?`<button class="action-btn btn-cancel" onclick="setStatus('${o.id}','cancelled')">❌ בטל</button>`:''}
-      </div>
+     <div class="order-actions">
+  ${o.status==='new'?`<button class="action-btn btn-confirm" onclick="setStatus('${o.id}','confirmed')">✅ אשר</button>`:''}
+  ${o.status!=='done'&&o.status!=='cancelled'?`<button class="action-btn btn-done" onclick="setStatus('${o.id}','done')">🎉 מוכן — שלח ווצאפ</button>`:''}
+  ${o.status!=='done'&&o.status!=='cancelled'?`<button class="action-btn" style="background:rgba(234,179,8,.15);color:#92400e;" onclick="sendDelay('${o.id}')">⏳ יש עיכוב</button>`:''}
+  <a href="https://wa.me/972${(o.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${waMsg}" target="_blank">
+    <button class="action-btn btn-wa" style="width:100%">💬 וואטסאפ</button>
+  </a>
+  ${o.status!=='cancelled'?`<button class="action-btn btn-cancel" onclick="setStatus('${o.id}','cancelled')">❌ בטל</button>`:''}
+</div>
     </div>
   </div>`;
 }
@@ -527,7 +528,34 @@ async function setStatus(id, status){
     await window._updateDoc(window._doc(window._db,'orders',id),{status});
     const labels = {confirmed:'✅ אושרה',done:'🎉 הושלמה',cancelled:'❌ בוטלה'};
     showToast(labels[status]||'עודכן');
+
+    // אם הושלמה — שלח וואטסאפ ללקוח
+    if(status==='done'){
+      const order = allOrders.find(o=>o.id===id);
+      if(order){
+        const msg = encodeURIComponent(
+          `היי *${order.name}*! 🍕\nהפיצה שלך מוכנה ומחכה לך!\n` +
+          `${order.type==='delivery'?'🛵 השליח בדרך אליך!':'🚶 אפשר לאסוף מ-'+order.address}\n\n` +
+          `תודה שהזמנת מפיצה בנימינה 🔥`
+        );
+        window.open(`https://wa.me/972${(order.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${msg}`,'_blank');
+      }
+    }
   }catch(e){ showToast('שגיאה בעדכון'); console.error(e); }
+}
+
+async function sendDelay(id){
+  const mins = prompt('כמה דקות עיכוב?');
+  if(!mins || isNaN(mins)) return;
+  const order = allOrders.find(o=>o.id===id);
+  if(!order) return;
+  const msg = encodeURIComponent(
+    `היי *${order.name}* 😊\n` +
+    `רצינו לעדכן שיש עיכוב קטן של כ-*${mins} דקות*.\n` +
+    `הפיצה שלך תהיה מוכנה בקרוב! 🍕🔥\n` +
+    `מתנצלים על אי הנוחות 🙏`
+  );
+  window.open(`https://wa.me/972${(order.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${msg}`,'_blank');
 }
 
 /* ══════════════════════════════
