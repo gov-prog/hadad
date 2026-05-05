@@ -45,7 +45,8 @@
   --gold:#C8901A;--gold-l:#E8B040;--muted:#7A6040;--border:#DDD0B0;
   --green:#22C55E;--green-d:#16A34A;
   --blue:#3B82F6;--blue-d:#1D4ED8;
-  --purple:#8B5CF6;
+  --purple:#8B5CF6;--purple-d:#6D28D9;
+  --orange:#F97316;--orange-d:#C2410C;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;}
@@ -119,6 +120,7 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
 .stat-card.green .stat-num{color:var(--green-d);}
 .stat-card.gold .stat-num{color:var(--gold);}
 .stat-card.blue .stat-num{color:var(--blue);}
+.stat-card.orange .stat-num{color:var(--orange-d);}
 
 /* ── FILTERS ── */
 .filters{
@@ -138,7 +140,6 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
   font-family:'Heebo',sans-serif;color:var(--muted);transition:all .15s;
 }
 .filter-btn:hover,.filter-btn.active{border-color:var(--tc);background:rgba(193,68,14,.06);color:var(--tc-d);}
-.filter-count{font-size:11px;background:var(--tc);color:#fff;border-radius:20px;padding:1px 7px;margin-right:4px;}
 .filter-sep{width:1px;height:28px;background:var(--border);}
 
 /* ── ORDERS LIST ── */
@@ -162,16 +163,18 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
 .order-card:hover{box-shadow:0 8px 30px rgba(0,0,0,.1);}
 .order-card.status-new{border-color:rgba(193,68,14,.35);}
 .order-card.status-confirmed{border-color:rgba(59,130,246,.3);}
-.order-card.status-done{border-color:rgba(34,197,94,.3);opacity:.75;}
+.order-card.status-ready{border-color:rgba(249,115,22,.45);}
+.order-card.status-transferred{border-color:rgba(34,197,94,.3);opacity:.75;}
 .order-card.status-cancelled{border-color:var(--border);opacity:.5;}
 
 /* status strip */
 .status-strip{
-  position:absolute;right:0;top:0;bottom:0;width:5px;border-radius:0 0 0 0;
+  position:absolute;right:0;top:0;bottom:0;width:5px;
 }
 .status-new .status-strip{background:var(--tc);}
 .status-confirmed .status-strip{background:var(--blue);}
-.status-done .status-strip{background:var(--green);}
+.status-ready .status-strip{background:var(--orange);}
+.status-transferred .status-strip{background:var(--green);}
 .status-cancelled .status-strip{background:#ccc;}
 
 .order-main{padding:18px 20px 18px 24px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
@@ -184,7 +187,8 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
 }
 .status-badge.new{background:rgba(193,68,14,.1);color:var(--tc-d);}
 .status-badge.confirmed{background:rgba(59,130,246,.1);color:var(--blue-d);}
-.status-badge.done{background:rgba(34,197,94,.1);color:var(--green-d);}
+.status-badge.ready{background:rgba(249,115,22,.12);color:var(--orange-d);}
+.status-badge.transferred{background:rgba(34,197,94,.1);color:var(--green-d);}
 .status-badge.cancelled{background:#f5f5f5;color:#999;}
 
 .order-customer{font-size:15px;font-weight:700;color:var(--char);margin-bottom:4px;}
@@ -211,8 +215,8 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
 }
 .btn-confirm{background:rgba(59,130,246,.1);color:var(--blue-d);}
 .btn-confirm:hover{background:var(--blue);color:#fff;}
-.btn-done{background:rgba(34,197,94,.1);color:var(--green-d);}
-.btn-done:hover{background:var(--green);color:#fff;}
+.btn-ready{background:rgba(249,115,22,.12);color:var(--orange-d);}
+.btn-ready:hover{background:var(--orange);color:#fff;}
 .btn-cancel{background:#f5f5f5;color:#999;}
 .btn-cancel:hover{background:#fee2e2;color:#dc2626;}
 .btn-wa{background:rgba(37,211,102,.1);color:#128C7E;}
@@ -233,6 +237,46 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
   white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.3);
 }
 #toast.show{transform:translateX(-50%) translateY(0);}
+
+/* delay modal */
+#delay-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:20px;
+}
+#delay-modal.open{display:flex;}
+.delay-box{
+  background:var(--cream);border-radius:24px;padding:36px 32px;
+  width:min(360px,100%);text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.4);
+}
+.delay-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:6px;}
+.delay-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.delay-mins-row{display:flex;gap:10px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+.delay-min-btn{
+  padding:11px 20px;border-radius:14px;border:2px solid var(--border);
+  background:#fff;font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'Heebo',sans-serif;color:var(--char);transition:all .15s;
+}
+.delay-min-btn:hover,.delay-min-btn.sel{border-color:var(--orange);background:rgba(249,115,22,.1);color:var(--orange-d);}
+.delay-custom{display:flex;gap:8px;margin-bottom:20px;}
+.delay-custom input{
+  flex:1;border:2px solid var(--border);border-radius:12px;
+  padding:11px 14px;font-size:15px;font-family:'Heebo',sans-serif;
+  background:#fff;outline:none;text-align:center;
+}
+.delay-custom input:focus{border-color:var(--orange);}
+.delay-send-btn{
+  width:100%;background:linear-gradient(135deg,var(--orange-d),var(--orange));
+  color:#fff;border:none;padding:15px;border-radius:14px;
+  font-size:16px;font-weight:800;cursor:pointer;font-family:'Heebo',sans-serif;
+  box-shadow:0 4px 18px rgba(249,115,22,.35);transition:all .2s;
+}
+.delay-send-btn:hover{transform:translateY(-2px);}
+.delay-cancel-btn{
+  width:100%;background:transparent;border:none;color:var(--muted);
+  font-size:13px;cursor:pointer;font-family:'Heebo',sans-serif;margin-top:12px;
+  padding:8px;
+}
 
 @media(max-width:600px){
   .order-main{grid-template-columns:1fr;}
@@ -286,9 +330,13 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
       <div class="stat-num" id="stat-confirmed">—</div>
       <div class="stat-lbl">✅ אושרו</div>
     </div>
+    <div class="stat-card orange">
+      <div class="stat-num" id="stat-ready">—</div>
+      <div class="stat-lbl">🍕 מוכנות</div>
+    </div>
     <div class="stat-card green">
-      <div class="stat-num" id="stat-done">—</div>
-      <div class="stat-lbl">🎉 הושלמו היום</div>
+      <div class="stat-num" id="stat-transferred">—</div>
+      <div class="stat-lbl">🚀 הועברו היום</div>
     </div>
     <div class="stat-card gold">
       <div class="stat-num" id="stat-revenue">—</div>
@@ -303,7 +351,8 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
     <button class="filter-btn active" data-status="all" onclick="setStatusFilter(this,'all')">הכל</button>
     <button class="filter-btn" data-status="new" onclick="setStatusFilter(this,'new')">חדשות 🆕</button>
     <button class="filter-btn" data-status="confirmed" onclick="setStatusFilter(this,'confirmed')">אושרו ✅</button>
-    <button class="filter-btn" data-status="done" onclick="setStatusFilter(this,'done')">הושלמו 🎉</button>
+    <button class="filter-btn" data-status="ready" onclick="setStatusFilter(this,'ready')">מוכנות 🍕</button>
+    <button class="filter-btn" data-status="transferred" onclick="setStatusFilter(this,'transferred')">הועברו 🚀</button>
     <button class="filter-btn" data-status="cancelled" onclick="setStatusFilter(this,'cancelled')">בוטלו ❌</button>
   </div>
 
@@ -314,13 +363,32 @@ body{background:#F0EAD6;color:var(--ink);font-family:'Heebo',sans-serif;min-heig
   </div>
 </div>
 
+<!-- ── DELAY MODAL ── -->
+<div id="delay-modal">
+  <div class="delay-box">
+    <div class="delay-title">⏳ שליחת עיכוב</div>
+    <div class="delay-sub" id="delay-customer-name">ללקוח</div>
+    <div class="delay-mins-row">
+      <button class="delay-min-btn" onclick="selectDelayMin(this,10)">10 דק׳</button>
+      <button class="delay-min-btn" onclick="selectDelayMin(this,15)">15 דק׳</button>
+      <button class="delay-min-btn" onclick="selectDelayMin(this,20)">20 דק׳</button>
+      <button class="delay-min-btn" onclick="selectDelayMin(this,30)">30 דק׳</button>
+    </div>
+    <div class="delay-custom">
+      <input type="number" id="delay-custom-input" placeholder="זמן אחר..." min="1" max="120" oninput="clearDelayBtns()">
+    </div>
+    <button class="delay-send-btn" onclick="confirmDelay()">📲 שלח הודעה</button>
+    <button class="delay-cancel-btn" onclick="closeDelayModal()">ביטול</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
 /* ══════════════════════════════
    AUTH
 ══════════════════════════════ */
-const ADMIN_PASS = 'hadad2024'; // ← שנה לסיסמה שלך
+const ADMIN_PASS = '123456';
 
 function doLogin(){
   const val = document.getElementById('pwd-input').value;
@@ -342,7 +410,6 @@ function doLogout(){
   location.reload();
 }
 
-// אם כבר מחובר בסשן
 if(sessionStorage.getItem('admin_auth')==='1'){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
@@ -353,6 +420,8 @@ if(sessionStorage.getItem('admin_auth')==='1'){
 ══════════════════════════════ */
 let allOrders = [];
 let statusFilter = 'all';
+let _delayOrderId = null;
+let _selectedDelayMin = null;
 
 /* ══════════════════════════════
    INIT
@@ -376,7 +445,6 @@ function initApp(){
   else document.addEventListener('firebase-ready', ready);
 }
 
-// אם כבר מחובר מסשן, אתחל אחרי Firebase
 if(sessionStorage.getItem('admin_auth')==='1'){
   const tryInit = ()=>{ if(window._firebaseReady) initApp(); else document.addEventListener('firebase-ready',initApp); };
   tryInit();
@@ -396,12 +464,10 @@ function applyFilters(){
   const dateVal = document.getElementById('filter-date').value;
   let filtered = [...allOrders];
 
-  // פילטר תאריך
   if(dateVal){
     filtered = filtered.filter(o=> o.date === dateVal || (o.createdAt && o.createdAt.startsWith(dateVal)));
   }
 
-  // פילטר סטטוס
   if(statusFilter !== 'all'){
     filtered = filtered.filter(o=> o.status === statusFilter);
   }
@@ -414,14 +480,14 @@ function applyFilters(){
    STATS
 ══════════════════════════════ */
 function renderStats(filtered, dateVal){
-  // סטטיסטיקות מכל ההזמנות של היום
   const todayAll = allOrders.filter(o=> o.date===dateVal || (o.createdAt&&o.createdAt.startsWith(dateVal)));
 
-  document.getElementById('stat-new').textContent       = todayAll.filter(o=>o.status==='new').length;
-  document.getElementById('stat-confirmed').textContent = todayAll.filter(o=>o.status==='confirmed').length;
-  document.getElementById('stat-done').textContent      = todayAll.filter(o=>o.status==='done').length;
+  document.getElementById('stat-new').textContent         = todayAll.filter(o=>o.status==='new').length;
+  document.getElementById('stat-confirmed').textContent   = todayAll.filter(o=>o.status==='confirmed').length;
+  document.getElementById('stat-ready').textContent       = todayAll.filter(o=>o.status==='ready').length;
+  document.getElementById('stat-transferred').textContent = todayAll.filter(o=>o.status==='transferred').length;
   const rev = todayAll.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.total||0),0);
-  document.getElementById('stat-revenue').textContent   = rev ? '₪'+rev : '₪0';
+  document.getElementById('stat-revenue').textContent     = rev ? '₪'+rev : '₪0';
 }
 
 /* ══════════════════════════════
@@ -441,7 +507,6 @@ function renderOrders(orders){
     return;
   }
 
-  // קיבוץ לפי תאריך הגעה
   const groups = {};
   orders.forEach(o=>{
     const key = o.date || 'ללא תאריך';
@@ -449,7 +514,6 @@ function renderOrders(orders){
     groups[key].push(o);
   });
 
-  // מיון תאריכים
   const sortedDates = Object.keys(groups).sort((a,b)=>a>b?1:-1);
 
   container.innerHTML = sortedDates.map(date=>{
@@ -463,11 +527,18 @@ function renderOrders(orders){
   }).join('');
 }
 
-function renderOrderCard(o, idx){
-  const statusLabel = {new:'חדשה 🆕',confirmed:'אושרה ✅',done:'הושלמה 🎉',cancelled:'בוטלה ❌'}[o.status]||o.status;
-  const statusClass = o.status||'new';
+function renderOrderCard(o){
+  const statusLabel = {
+    new:'חדשה 🆕',
+    confirmed:'אושרה ✅',
+    ready:'מוכנה 🍕',
+    transferred:'הועברה 🚀',
+    cancelled:'בוטלה ❌'
+  }[o.status] || o.status;
 
+  const statusClass = o.status || 'new';
   const createdTime = o.createdAt ? new Date(o.createdAt).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}) : '';
+  const isDelivery  = o.type === 'delivery';
 
   const itemsHTML = (o.items||[]).map(it=>{
     if(it.type==='topping') return `<div class="order-item-row"><span class="order-item-name">+ ${it.name} ×${it.qty}</span><span class="order-item-price">₪${(it.price||5)*it.qty}</span></div>`;
@@ -476,6 +547,32 @@ function renderOrderCard(o, idx){
   }).join('');
 
   const waMsg = encodeURIComponent(`היי ${o.name}! ההזמנה שלך אושרה לשעה ${o.slot} 🍕✅`);
+
+  // ── כפתורי פעולה לפי סטטוס ──
+  let actionBtns = '';
+
+  if(o.status === 'new'){
+    actionBtns += `<button class="action-btn btn-confirm" onclick="setStatus('${o.id}','confirmed')">✅ אשר</button>`;
+  }
+
+  if(o.status === 'confirmed'){
+    actionBtns += `<button class="action-btn btn-ready" onclick="markReady('${o.id}')">🍕 מוכן — שלח ווצאפ</button>`;
+  }
+
+  // עיכוב: רק להזמנות פעילות שלא הועברו/בוטלו
+  if(o.status !== 'transferred' && o.status !== 'cancelled'){
+    actionBtns += `<button class="action-btn" style="background:rgba(234,179,8,.15);color:#92400e;" onclick="openDelayModal('${o.id}')">⏳ יש עיכוב</button>`;
+  }
+
+  // וואטסאפ ישיר תמיד
+  actionBtns += `
+    <a href="https://wa.me/972${(o.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${waMsg}" target="_blank">
+      <button class="action-btn btn-wa" style="width:100%">💬 וואטסאפ</button>
+    </a>`;
+
+  if(o.status !== 'cancelled'){
+    actionBtns += `<button class="action-btn btn-cancel" onclick="setStatus('${o.id}','cancelled')">❌ בטל</button>`;
+  }
 
   return `<div class="order-card status-${statusClass}" id="card-${o.id}">
     <div class="status-strip"></div>
@@ -491,7 +588,7 @@ function renderOrderCard(o, idx){
         <div class="order-customer">👤 ${o.name||'—'} &nbsp;·&nbsp; 📞 ${o.phone||'—'}</div>
 
         <div class="order-info-row">
-          <span>${o.type==='delivery'?'🛵 משלוח':'🚶 איסוף'}</span>
+          <span>${isDelivery?'🛵 משלוח':'🚶 איסוף'}</span>
           <span>📍 ${o.address||'—'}</span>
         </div>
 
@@ -506,49 +603,89 @@ function renderOrderCard(o, idx){
         </div>
       </div>
 
-     <div class="order-actions">
-  ${o.status==='new'?`<button class="action-btn btn-confirm" onclick="setStatus('${o.id}','confirmed')">✅ אשר</button>`:''}
-  ${o.status!=='done'&&o.status!=='cancelled'?`<button class="action-btn btn-done" onclick="setStatus('${o.id}','done')">🎉 מוכן — שלח ווצאפ</button>`:''}
-  ${o.status!=='done'&&o.status!=='cancelled'?`<button class="action-btn" style="background:rgba(234,179,8,.15);color:#92400e;" onclick="sendDelay('${o.id}')">⏳ יש עיכוב</button>`:''}
-  <a href="https://wa.me/972${(o.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${waMsg}" target="_blank">
-    <button class="action-btn btn-wa" style="width:100%">💬 וואטסאפ</button>
-  </a>
-  ${o.status!=='cancelled'?`<button class="action-btn btn-cancel" onclick="setStatus('${o.id}','cancelled')">❌ בטל</button>`:''}
-</div>
+      <div class="order-actions">
+        ${actionBtns}
+      </div>
     </div>
   </div>`;
 }
 
 /* ══════════════════════════════
-   ACTIONS
+   MARK READY — לוגיקת "מוכן"
 ══════════════════════════════ */
-async function setStatus(id, status){
-  if(!window._firebaseReady) return;
-  try{
-    await window._updateDoc(window._doc(window._db,'orders',id),{status});
-    const labels = {confirmed:'✅ אושרה',done:'🎉 הושלמה',cancelled:'❌ בוטלה'};
-    showToast(labels[status]||'עודכן');
-
-    // אם הושלמה — שלח וואטסאפ ללקוח
-    if(status==='done'){
-      const order = allOrders.find(o=>o.id===id);
-      if(order){
-        const msg = encodeURIComponent(
-          `היי *${order.name}*! 🍕\nהפיצה שלך מוכנה ומחכה לך!\n` +
-          `${order.type==='delivery'?'🛵 השליח בדרך אליך!':'🚶 אפשר לאסוף מ-'+order.address}\n\n` +
-          `תודה שהזמנת מפיצה בנימינה 🔥`
-        );
-        window.open(`https://wa.me/972${(order.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${msg}`,'_blank');
-      }
-    }
-  }catch(e){ showToast('שגיאה בעדכון'); console.error(e); }
-}
-
-async function sendDelay(id){
-  const mins = prompt('כמה דקות עיכוב?');
-  if(!mins || isNaN(mins)) return;
+async function markReady(id){
   const order = allOrders.find(o=>o.id===id);
   if(!order) return;
+
+  const isDelivery = order.type === 'delivery';
+
+  if(isDelivery){
+    // משלוח: שאל כמה דקות
+    const mins = prompt(`כמה דקות עד שמגיע השליח ל${order.name || 'לקוח'}?`);
+    if(mins === null) return; // ביטול
+    const minsNum = parseInt(mins);
+    if(!minsNum || minsNum < 1){ showToast('הכנס מספר דקות תקין'); return; }
+
+    const msg = encodeURIComponent(
+      `היי *${order.name}*! 🍕🔥\n` +
+      `הפיצה שלך מוכנה ויוצאת אליך למשלוח בעוד כ-*${minsNum} דקות*!\n\n` +
+      `תודה שהזמנת מפיצה בנימינה 🙏`
+    );
+    window.open(`https://wa.me/972${(order.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${msg}`,'_blank');
+  } else {
+    // איסוף עצמי
+    const msg = encodeURIComponent(
+      `היי *${order.name}*! 🍕✅\n` +
+      `הפיצה שלך *מוכנה* ומחכה לך!\n` +
+      `אפשר להגיע לאסוף מ-${order.address || 'הסניף'} 🚶\n\n` +
+      `תודה שהזמנת מפיצה בנימינה 🔥`
+    );
+    window.open(`https://wa.me/972${(order.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${msg}`,'_blank');
+  }
+
+  // עדכן סטטוס ל-"הועבר"
+  await setStatus(id, 'transferred');
+}
+
+/* ══════════════════════════════
+   DELAY MODAL
+══════════════════════════════ */
+function openDelayModal(id){
+  _delayOrderId = id;
+  _selectedDelayMin = null;
+  const order = allOrders.find(o=>o.id===id);
+  document.getElementById('delay-customer-name').textContent = order ? `ל${order.name}` : '';
+  document.getElementById('delay-custom-input').value = '';
+  document.querySelectorAll('.delay-min-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('delay-modal').classList.add('open');
+}
+
+function closeDelayModal(){
+  document.getElementById('delay-modal').classList.remove('open');
+  _delayOrderId = null;
+  _selectedDelayMin = null;
+}
+
+function selectDelayMin(btn, mins){
+  _selectedDelayMin = mins;
+  document.getElementById('delay-custom-input').value = '';
+  document.querySelectorAll('.delay-min-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function clearDelayBtns(){
+  _selectedDelayMin = null;
+  document.querySelectorAll('.delay-min-btn').forEach(b=>b.classList.remove('sel'));
+}
+
+function confirmDelay(){
+  const customVal = parseInt(document.getElementById('delay-custom-input').value);
+  const mins = _selectedDelayMin || customVal;
+  if(!mins || mins < 1){ showToast('בחר כמות דקות'); return; }
+
+  const order = allOrders.find(o=>o.id===_delayOrderId);
+  if(!order){ closeDelayModal(); return; }
+
   const msg = encodeURIComponent(
     `היי *${order.name}* 😊\n` +
     `רצינו לעדכן שיש עיכוב קטן של כ-*${mins} דקות*.\n` +
@@ -556,6 +693,25 @@ async function sendDelay(id){
     `מתנצלים על אי הנוחות 🙏`
   );
   window.open(`https://wa.me/972${(order.phone||'').replace(/\D/g,'').replace(/^0/,'')}?text=${msg}`,'_blank');
+  showToast(`⏳ הודעת עיכוב נשלחה ל${order.name}`);
+  closeDelayModal();
+}
+
+// סגירת מודל בלחיצה מחוץ לתוכן
+document.getElementById('delay-modal').addEventListener('click', function(e){
+  if(e.target === this) closeDelayModal();
+});
+
+/* ══════════════════════════════
+   SET STATUS
+══════════════════════════════ */
+async function setStatus(id, status){
+  if(!window._firebaseReady) return;
+  try{
+    await window._updateDoc(window._doc(window._db,'orders',id),{status});
+    const labels = {confirmed:'✅ אושרה',ready:'🍕 מוכנה',transferred:'🚀 הועברה',cancelled:'❌ בוטלה'};
+    showToast(labels[status]||'עודכן');
+  }catch(e){ showToast('שגיאה בעדכון'); console.error(e); }
 }
 
 /* ══════════════════════════════
